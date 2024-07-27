@@ -19,6 +19,17 @@ const StyledTextField = styled(TextField)(({ theme }) => ({
       boxShadow: `0 0 0 2px ${theme.palette.primary.light}`,
     },
   },
+  '& .MuiInputLabel-root': {
+    transform: 'translate(14px, 16px) scale(1)',
+    '&.MuiInputLabel-shrink': {
+      transform: 'translate(14px, -6px) scale(0.75)',
+      background: 'white',
+      padding: '0 4px',
+    },
+  },
+  '& .MuiOutlinedInput-notchedOutline': {
+    borderColor: 'rgba(0, 0, 0, 0.23)',
+  },
 }));
 
 const StyledButton = styled(Button)(({ theme }) => ({

@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { TextField, Button, Box, Typography, CircularProgress } from '@mui/material';
+import React, { useState, useEffect, useCallback } from 'react';
+import { TextField, Button, Box, Typography, CircularProgress, Switch, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import { green } from '@mui/material/colors';
 import { createTask, updateTask } from '../../controllers/task_controller';
@@ -7,20 +7,25 @@ import { createTask, updateTask } from '../../controllers/task_controller';
 const TaskForm = ({ task, onTaskAdded, onTaskUpdated, onCancel }) => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
+  const [completed, setCompleted] = useState(false);
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [showCancelDialog, setShowCancelDialog] = useState(false);
+
+  const validateField = useCallback((name, value) => {
+    if (!value.trim()) {
+      return `${name.charAt(0).toUpperCase() + name.slice(1)} es requerido`;
+    }
+    return '';
+  }, []);
 
   useEffect(() => {
     if (task) {
       setTitle(task.title);
       setDescription(task.description);
-    } else {
-      setTitle('');
-      setDescription('');
+      setCompleted(task.completed);
     }
-    setErrors({});
-    setSuccess(false);
   }, [task]);
 
   const validateForm = () => {
@@ -35,6 +40,21 @@ const TaskForm = ({ task, onTaskAdded, onTaskUpdated, onCancel }) => {
     return Object.keys(newErrors).length === 0;
   };
 
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    if (name === 'title') setTitle(value);
+    if (name === 'description') setDescription(value);
+    setErrors(prev => ({ ...prev, [name]: validateField(name, value) }));
+  };
+
+  const handleCancel = () => {
+    if (title !== task?.title || description !== task?.description || completed !== task?.completed) {
+      setShowCancelDialog(true);
+    } else {
+      onCancel();
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validateForm()) {
@@ -44,10 +64,10 @@ const TaskForm = ({ task, onTaskAdded, onTaskUpdated, onCancel }) => {
     setSuccess(false);
     try {
       if (task) {
-        const updatedTask = await updateTask(task.id, { title, description });
+        const updatedTask = await updateTask(task.id, { title, description, completed });
         onTaskUpdated(updatedTask);
       } else {
-        const newTask = await createTask({ title, description });
+        const newTask = await createTask({ title, description, completed });
         onTaskAdded(newTask);
       }
       setTitle('');
@@ -75,7 +95,7 @@ const TaskForm = ({ task, onTaskAdded, onTaskUpdated, onCancel }) => {
         name="title"
         autoFocus
         value={title}
-        onChange={(e) => setTitle(e.target.value)}
+        onChange={handleChange}
         error={!!errors.title}
         helperText={errors.title}
         disabled={isSubmitting}
@@ -90,11 +110,20 @@ const TaskForm = ({ task, onTaskAdded, onTaskUpdated, onCancel }) => {
         multiline
         rows={4}
         value={description}
-        onChange={(e) => setDescription(e.target.value)}
+        onChange={handleChange}
         error={!!errors.description}
         helperText={errors.description}
         disabled={isSubmitting}
       />
+      <Box sx={{ display: 'flex', alignItems: 'center', mt: 2 }}>
+        <Typography variant="body1" sx={{ mr: 2 }}>Completada:</Typography>
+        <Switch
+          checked={completed}
+          onChange={(e) => setCompleted(e.target.checked)}
+          disabled={isSubmitting}
+          inputProps={{ 'aria-label': 'Tarea completada' }}
+        />
+      </Box>
       {errors.submit && (
         <Typography color="error" variant="body2" sx={{ mt: 1 }}>
           {errors.submit}

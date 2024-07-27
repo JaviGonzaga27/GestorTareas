@@ -5,7 +5,7 @@ from tasks.models.user_model import UserProfile
 class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserProfile
-        fields = ['bio', 'location', 'birth_date']
+        fields = ['profile']
 
 class UserSerializer(serializers.ModelSerializer):
     profile = UserProfileSerializer(required=False)
@@ -23,7 +23,7 @@ class UserSerializer(serializers.ModelSerializer):
             email=validated_data['email'],
             password=validated_data['password']
         )
-        UserProfile.objects.create(user=user, **profile_data)
+        UserProfile.objects.update_or_create(user=user, defaults=profile_data)
         return user
 
     def update(self, instance, validated_data):
@@ -34,9 +34,7 @@ class UserSerializer(serializers.ModelSerializer):
             instance.set_password(validated_data['password'])
         instance.save()
 
-        profile = instance.profile
-        for attr, value in profile_data.items():
-            setattr(profile, attr, value)
-        profile.save()
+        if profile_data:
+            UserProfile.objects.update_or_create(user=instance, defaults=profile_data)
 
         return instance

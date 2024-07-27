@@ -3,8 +3,7 @@ export default class TaskModel {
         this.id = data.id;
         this.title = data.title;
         this.description = data.description;
-        this.createdAt = new Date(data.created_at);
-        this.updatedAt = new Date(data.updated_at);
+        this.completed = data.completed;
         this.userId = data.user;
     }
 }

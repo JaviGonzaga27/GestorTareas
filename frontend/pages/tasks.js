@@ -107,7 +107,7 @@ function Tasks() {
 
   return (
     <MainLayout>
-      <Container maxWidth="md">
+      <Container maxWidth="lg">
         <StyledPaper elevation={3}>
           <Grid container spacing={3} alignItems="center" justifyContent="space-between">
             <Grid item>

@@ -20,6 +20,7 @@ const TaskList = ({ tasks, onEditTask, onDeleteTask }) => {
           <TableRow>
             <TableCell>Tarea</TableCell>
             <TableCell>Descripcion</TableCell>
+            <TableCell>Estado</TableCell>
             <TableCell align="right">Acciones</TableCell>
           </TableRow>
         </TableHead>
@@ -33,6 +34,11 @@ const TaskList = ({ tasks, onEditTask, onDeleteTask }) => {
                 <TableCell>
                   <Typography variant="body2" color="textSecondary">
                     {task.description}
+                  </Typography>
+                </TableCell>
+                <TableCell>
+                  <Typography variant="body2" color="textSecondary">
+                    {task.completed ? 'Completada' : 'Pendiente'}
                   </Typography>
                 </TableCell>
                 <TableCell align="right">
@@ -55,7 +61,7 @@ const TaskList = ({ tasks, onEditTask, onDeleteTask }) => {
             ))
           ) : (
             <TableRow>
-              <TableCell colSpan={3} align="center">
+              <TableCell colSpan={4} align="center">
                 <Typography variant="subtitle1">No tasks available</Typography>
               </TableCell>
             </TableRow>
